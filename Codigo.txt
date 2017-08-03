@@ -1,0 +1,186 @@
+%METODO ORDEN BURBUJA
+ordenamiento_burbuja(Lista,Ordenado):-ordenamiento_b(Lista,[],Ordenado),!.
+ordenamiento_b([],Acc,Acc).
+ordenamiento_b([H|T],Acc,Ordenado):-burbuja(H,T,NT,Max),ordenamiento_b(NT,[Max|Acc],Ordenado).
+burbuja([X,NX],[],[],[X,NX]).
+burbuja([X,NX],[[Y,NY]|T],[[Y,NY]|NT],Max):-X>Y,burbuja([X,NX],T,NT,Max).
+burbuja([X,NX],[[Y,NY]|T],[[X,NX]|NT],Max):-X=<Y,burbuja([Y,NY],T,NT,Max).
+
+%VERIFICA SI UN ELEMENTO PERTENECE A UNA LISTA
+pertenece(Elemento,[Elemento|_]):-!.
+pertenece(Elemento,[_|Cola]):-pertenece(Elemento,Cola).
+
+%ENCUENTRA EL CONJUNTO QUE ES LA INTERSECCION
+interseccion([],_,[]).
+interseccion([Cabeza|Cola],Conjunto2,[Cabeza|Cola2]):-
+pertenece(Cabeza,Conjunto2),interseccion(Cola,Conjunto2,Cola2),!.
+interseccion([_|Cola],Conjunto2,Resultado):-interseccion(Cola,Conjunto2,Resultado).
+
+%CUENTA ELEMENTOS DE UNA LISTA
+long([],0):-!.
+long([_|Y],S):-long(Y,T),!, S is T + 1.
+
+%CUENTA CUANTOS ELEMENTOS SON LA INTERSECCION
+contar(Conjunto1,Conjunto2,S):-interseccion(Conjunto1,Conjunto2,Resultado),
+sort(Resultado,Resultado2),long(Resultado2,S).
+
+%SON LAS ENFERMEDADES
+
+medicamento(depresion,[terapia_cognitivo_conductual,psicoterapia]).
+medicamento(ansiedad_panico_y_fobias,[psicoterapia,medicamento_valium,antidepresivos]).
+medicamento(transtorno_obsesivo_compulsivo,[terapia_conductual,fluoxetina,clomipramina]).
+medicamento(estres_postraumatico,[emdr_movimiento_ocular,terapia_de_grupo,antidepresivos]).
+medicamento(adicciones,[terapia_en_grupo,rehabilitacion]).
+
+enfermedad(depresion,[infelicidad,tristeza,agotacion,dormir_poco,sin_sexo,irritabilidad,pensamiento_suicida]).
+enfermedad(ansiedad_panico_y_fobias,[preocupacion,cansancio,irritabilidad,dormir_poco,mareos,desmayos,diarrea]).
+enfermedad(transtorno_obsesivo_compulsivo,[preocupado,irritabilidad,tristeza]).
+enfermedad(estres_postraumatico,[pesadillas,dolor_muscular,dolor_cabeza]).
+enfermedad(adicciones,[dependencia,apatia,desinteres,autolesiones,suicidio,psicosis,dormir_poco]).
+
+
+
+%MUESTRA LA POSICION N DE UNA LISTA
+posicion_n([],_,[]):-!.
+posicion_n([X|_],1,X):-!.
+posicion_n([_|R],N,S):-M is N - 1,posicion_n(R,M,S).
+
+%MUESTRA LA ENFERMEDAD SOLO SI TODOS LOS SINTOMAS SE ENCUENTRAN EN ELLA
+muestra(Sintomas,R,N):-posicion_n(R,N,[V4,N4]),long(Sintomas,Cantidad)
+,enfermedad(N4,Conjunto),contar(Sintomas,Conjunto,R4),
+(R4 == Cantidad ->write(N4),write(': '),write(V4),write(' %')
+,write('\n');R4 =\= Cantidad ->write('')).
+
+
+diagnostico(Sintomas):-
+write('\n'),write('\n'),
+write('              ENFERMEDADES	 '),write('\n'),
+write('______________________________________'),write('\n'),
+long(Sintomas,Cantidad),enfermedad(depresion,A),enfermedad(ansiedad_panico_y_fobias,B),
+enfermedad(transtorno_obsesivo_compulsivo,C),enfermedad(estres_postraumatico,D),enfermedad(adicciones,E),
+contar(Sintomas,A,R1),
+contar(Sintomas,B,R2),
+contar(Sintomas,C,R3),
+contar(Sintomas,D,R4),
+contar(Sintomas,E,R5),
+R11 is R1*100/5,R22 is R2*100/5,R33 is R3*100/6,R44 is R4*100/5,R55 is R5*100/5,
+ordenamiento_burbuja([[R11,depresion],[R22,ansiedad_panico_y_fobias],[R33,transtorno_obsesivo_compulsivo],
+[R44,estres_postraumatico],[R55,adicciones]],R),
+write('Sintomas Identificados :'),write(Cantidad),write('\n'),
+write('______________________________________'),write('\n'),
+write('Sintomas con la Depresion :'),write(R1),write('\n'),
+write('Sintomas con la Ansiedad Panico y Fobias :'),write(R2),write('\n'),
+write('Sintomas con el Transtorno Obsesivo Compulsivo :'),write(R3),write('\n'),
+write('Sintomas con el Estres Postraumatico :'),write(R4),write('\n'),
+write('Sintomas con las Adicciones :'),write(R5),write('\n'),
+write('______________________________________'),write('\n'),
+write('PORCENTAJE DE TODOS LAS ENFERMEDADES'),write('\n'),
+write('______________________________________'),write('\n'),
+posicion_n(R,5,[V5,N5]),write(N5),write(': '),write(V5),write(' %'),write('\n'),
+posicion_n(R,4,[V4,N4]),write(N4),write(': '),write(V4),write(' %'),write('\n'),
+posicion_n(R,3,[V3,N3]),write(N3),write(': '),write(V3),write(' %'),write('\n'),
+posicion_n(R,2,[V2,N2]),write(N2),write(': '),write(V2),write(' %'),write('\n'),
+posicion_n(R,1,[V1,N1]),write(N1),write(': '),write(V1),write(' %'),write('\n'),
+write('______________________________________'),write('\n'),
+write('PORCENTAJE SOLO LOS QUE CUMPLEN'),write('\n'),
+write('______________________________________'),write('\n'),
+muestra(Sintomas,R,5),
+muestra(Sintomas,R,4),
+muestra(Sintomas,R,3),
+muestra(Sintomas,R,2),
+muestra(Sintomas,R,1),
+write('______________________________________'),write('\n'),
+muestramedicamento(V5,V4,R).
+
+muestramedicamento(V5,V4,R):-
+V5=\=V4 ->
+(  write('TRATAMIENTO PARA LA ENFERMEDAD'),write('\n'),
+posicion_n(R,5,[V5,N5]),
+write(N5),write(' :'),write('\n'),
+medicamento(N5,ME),write(ME));
+V5==V4->write('Falta de informacion').
+
+
+cambia(bien_gracias,me_alegra_mucho_dime_en_que_te_ayudo,Lista,R):-R = Lista.
+cambia(mal_doctor,cuentame_porque_te_sientes_asi,Lista,R):-R = Lista.
+cambia(hola,hola_como_estas,Lista,R):-R = Lista.
+cambia(buenas_tardes,hola_buenas_tardes,Lista,R):-R = Lista.
+cambia(buenas_noches,hola_buenas_tardes,Lista,R):-R = Lista.
+cambia(buen_dia,hola_buenas_tardes,Lista,R):-R = Lista.
+
+
+cambia(mal,porque_te_sientes_asi,Lista,R):-R = [malestar|Lista].
+cambia(bien,me_alegra_mucho,Lista,R):-R = Lista.
+cambia(muy_bien,que_bien_que_te_sientas_asi,Lista,R):-R = Lista.
+
+
+cambia(vengo_por_la_consulta,dime_en_que_te_puedo_ayudar,Lista,R):-R = Lista.
+cambia(me_siento_deprimido,y_porque_piensas_que_te_sientes_asi,Lista,R):-R = [depresion|Lista].
+cambia(me_siento_triste,porque_te_paso_algo_ultimamente,Lista,R):-R = [tristeza|Lista].
+cambia(tengo_sensacion_de_miedo,cuando_sientes_eso,Lista,R):-R = [miedo|Lista].
+cambia(tengo_pesadillas,y_dime_con_que_te_sueñas,Lista,R):-R = [pesadillas|Lista].
+cambia(tengo_dolor_de_cabeza,y_cada_cuanto_son_esos_dolores,Lista,R):-R = [dolor_cabeza|Lista].
+cambia(tengo_dolor_muscular,en_que_parte_del_cuerpo,Lista,R):-R = [dolor_muscular|Lista].
+cambia(me_siento_infeliz,porque_sientes_eso,Lista,R):-R = [infelicidad|Lista].
+cambia(me_siento_agotado,talves_haces_mucho_ejercicio,Lista,R):-R = [agotacion|Lista].
+cambia(duermo_poco,cuantas_horas,Lista,R):-R = [dormir_poco|Lista].
+cambia(perdi_el_interes_por_el_sexo,no_tienes_pareja,Lista,R):-R = [sin_sexo|Lista].
+cambia(no_tengo_porque_contarle_mas,bueno_como_tu_quieras,Lista,R):-R = [irritabilidad|Lista].
+cambia(aveces_quisiera_matarme,porque,Lista,R):-R = [suicida|Lista].
+cambia(me_siento_preocupado,y_sabes_a_que_se_debe_eso,Lista,R):-R = [preocupacion|Lista].
+
+cambia(tambien_me_siento_cansado,haces_ejercicio,Lista,R):-R = [cansancio|Lista].
+cambia(me_siento_cansado,haces_ejercicio,Lista,R):-R = [cansancio|Lista].
+cambia(tambien_me_siento_mareado,en_que_momento_sucede_eso,Lista,R):-R = [mareos|Lista].
+cambia(me_siento_mareado,en_que_momento_sucede_eso,Lista,R):-R = [mareos|Lista].
+cambia(a_veces_me_desmayo,porque,Lista,R):-R = [desmayos|Lista].
+cambia(a_veces_soy_irritable,porque,Lista,R):-R = [irritabilidad|Lista].
+cambia(soy_muy_dependiente,en_que_sentido,Lista,R):-R = [dependencia|Lista].
+cambia(siento_que_la_vida_ya_no_me_importa,porque_te_paso_algo,Lista,R):-R = [desinteres|Lista].
+cambia(a_veces_me_lastimo_yo_mismo,porque,Lista,R):-R = [autolesiones|Lista].
+
+cambia(me_tengo_que_ir,esta_bien,Lista,R):-R = Lista.
+cambia(hasta_luego,hasta_luego_que_te_vaya_bien,Lista,R):-R = Lista.
+cambia(me_tengo_que_ir_doctor,esta_bien,Lista,R):-R = Lista.
+
+cambia(eso_es_todo_doctor,bueno_mi_diagnostico_es_el_siguiente,Lista,R):-R = Lista.
+
+cambia(le_cuento_que_me_siento_mal,y_sabes_porque_siento_eso,Lista,R):-R =[tristeza|Lista].
+
+
+
+cambia(le_cuento_que_tengo_los_siguientes_sintomas,adelante_cuentame,Lista,R):-R = Lista.
+
+cambia(gracias,de_nada_para_eso_estamos_los_psiquiatras,Lista,R):-R = Lista.
+cambia(chau,chau_espero_que_te_vaya_muy_bien,Lista,R):-R = Lista.
+
+cambia(_,cuentame_mas,Lista,R):-R = Lista.
+
+psiquiatra(Lista):-
+write('Paciente: '),read(Entrada),
+cambia(Entrada,Salida,Lista,R),
+write('Psiquiatra: '),
+write(Salida),
+write('\n'),
+(Entrada == 'chau'->diagnostico(R),!;Entrada == 'eso_es_todo_doctor'->diagnostico(R),!;psiquiatra(R)).
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
